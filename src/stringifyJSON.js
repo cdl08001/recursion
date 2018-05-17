@@ -14,28 +14,16 @@ Step 2: create function isArray(obj)
     - If empty, return '{}', otherwise, return false;
 
 Base Case: 
-  - If array.length === 0, OR
-  - Object.keys(obj).length === 0, add ] or } to result.
-  - Return result
+  - If obj is a simple object, return the obj
+  - If obj is empty array\object, return obj
+  - 
 
 Recursive Case:
-  - If object is an array:
-    - use obj.shift() to target first element. Add to result.
-    - call stringifyJSON(obj) to work through remaining elements
-
-  - If object is not an array (meaning it is an object literal):
-    - use Object.keys(obj) to get an array of the object keys. Push to variable.
-    - add first element in array to result, followed by ": ", followed by obj[key] value, followed by ", ".
-    - remove first element key from object using delete.
-    - call stringifyJSON(obj) to work through remaining elements
-
-
+  - 
 
 */
-
-var result = '';
-
 function isSimpleObject(obj){
+
   if(typeof obj === 'number'){
     return true;
   } else if(typeof obj === 'boolean'){
@@ -47,46 +35,54 @@ function isSimpleObject(obj){
   }
 }
 
+function isEmpty(obj){
+  if(obj.length === 0){
+    return true;
+  } else {
+    for(var key in obj){
+      if(obj.hasOwnProperty(key)){
+        return false
+      }
+    }
+    return true; 
+  }
+}
+
 function isArray(obj){
   if(Array.isArray(obj)){
-    if(obj.length === 0){
-      return '[]';
-    } else {
-      return true;
-    } 
-  } else if(Object.keys(obj).length === 0){
-      return '{}';
+    return true;
   } else {
-      return false; 
+    return false;
   }
 }
 
-var stringifyJSON = function(obj){
-
-  isSimpleObject(obj);
-  var objectIsArray = Array.isArray(obj);
+var stringifyJSON = function(obj){ 
+  var result = '';
 
   //Base Case:
-  if(isSimpleObject){
-    result += obj;
-    return result; 
-  } else if(obj.length === 0){
-    result += ']';
-    return result;
-  } else if(Object.keys(obj).length === 0){
-    result += '}';
-    return result;
-  } 
+  if(isSimpleObject(obj)){
+    if(typeof obj === 'string'){
+      result += `"${obj}"`;
+      return result;
+    } else {
+      result += obj;
+      return result;
+    }
+  } else if(isEmpty(obj)){
+      if(isArray(obj)){
+        result += '[]';
+        return result;
+      } else {
+          result += '{}';
+          return result;
+      }
+  }
 
   //Recursive Case:
-  if(objectIsArray){
-    var currrentElement = obj.shift();
-    result += currrentElement;
-    stringifyJSON(obj);
-  } else if(!objectIsArray){
-    var objectKeys = Object.keys(obj);
-    result += objectKeys[0] + ': ' + obj[objectKeys[0]] + ', ';
-    delete obj[objectKeys[0]];
-    stringifyJSON(obj);
-  }
+
 }
+
+
+
+
+
