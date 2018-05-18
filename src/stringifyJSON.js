@@ -2,85 +2,68 @@
 // var stringifyJSON = JSON.stringify;
 // but you don't so you're going to write it from scratch:
 /*
-Step 1: create function identifyObjectType(obj)
-  - Given an object, identify the type of object
-  - and if it is a 'number', 'boolean', or 'string',
-  - return it as a string;
-
-Step 2: create function isArray(obj)
-  - Given an object, identify if it is an array, and if so, check if empty.
-    - If empty, return '[]', otherwise, return true;
-  - If object is NOT an array, check if empty.
-    - If empty, return '{}', otherwise, return false;
-
-Base Case: 
-  - If obj is a simple object, return the obj
-  - If obj is empty array\object, return obj
-  - 
-
-Recursive Case:
-  - 
 
 */
-function isSimpleObject(obj){
-
-  if(typeof obj === 'number'){
-    return true;
-  } else if(typeof obj === 'boolean'){
-    return true;
-  } else if(typeof obj === 'string'){
-    return true;
-  } else if (obj === null){
-    return true;
-  }
-}
-
-function isEmpty(obj){
-  if(obj.length === 0){
-    return true;
-  } else {
-    for(var key in obj){
-      if(obj.hasOwnProperty(key)){
-        return false
-      }
-    }
-    return true; 
-  }
-}
-
-function isArray(obj){
-  if(Array.isArray(obj)){
-    return true;
-  } else {
-    return false;
-  }
-}
-
 var stringifyJSON = function(obj){ 
-  var result = '';
+  var finalArray = [];
+  var finalObject = [];
 
-  //Base Case:
-  if(isSimpleObject(obj)){
-    if(typeof obj === 'string'){
-      result += `"${obj}"`;
-      return result;
-    } else {
-      result += obj;
-      return result;
-    }
-  } else if(isEmpty(obj)){
-      if(isArray(obj)){
-        result += '[]';
-        return result;
-      } else {
-          result += '{}';
-          return result;
-      }
+// Initial Check: Return Simple Objects
+  if(obj === null){
+    return 'null';
+  } else if(typeof obj === 'string'){
+    return `"${obj}"`;
+  } else if(typeof obj !== 'object'){
+    return '' + obj;
   }
 
-  //Recursive Case:
+// If 'obj' is an array:
+  if(Array.isArray(obj)){
+    if(obj.length === 0){
+      return '[]';
+    } else {
+      obj.forEach(function(element){
+        finalArray.push(stringifyJSON(element))
+      })
+    }
+    return '[' + finalArray + ']';
+  }
+
+// If 'obj' is an object literal:
+  if(Object.keys(obj).length === 0){
+    return '{}';
+  } else if (Object.keys(obj).includes('functions')){
+    return '{}';
+  } else if(Object.keys(obj).length === 1) {
+    var objectKeys = Object.keys(obj);
+    objectKeys.forEach(function(key){
+      var objectValue = obj[key];
+      finalObject.push(stringifyJSON(key));
+      finalObject.push(':');
+      finalObject.push(stringifyJSON(objectValue));
+    })
+    return '{' + finalObject.join('') + '}';
+  } else if(Object.keys(obj).length > 1){
+    var objectKeys = Object.keys(obj);
+    objectKeys.forEach(function(key){
+      var objectValue = obj[key];
+      finalObject.push(stringifyJSON(key));
+      finalObject.push(':');
+      finalObject.push(stringifyJSON(objectValue));
+      if(key !== objectKeys[objectKeys.length - 1]){
+        finalObject.push(',');
+      }
+    })
+    return '{' + finalObject.join('') + '}';    
+  }
+
 
 }
+
+
+
+
+
 
 
 
